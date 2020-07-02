@@ -160,7 +160,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    findTallys: function (event) {
+    findTallys: function () {
       const tallys = ipcRenderer.sendSync('get-vmix-tallys');
       this.$store.dispatch('addTallys', tallys);
     },
@@ -230,7 +230,6 @@ export default Vue.extend({
     },
     toggleLed(type, tally) {
       let data = type + ":";
-      console.log(tally[type]);
       if (tally[type]) {
         data += "false";
       } else {

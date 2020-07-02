@@ -34,7 +34,6 @@ export default new Vuex.Store({
     addTallys(state, tallys) {
       state.tallys = [];
       tallys.forEach((tally) => {
-        console.log(tally)
         const newTally = {
           name: tally.name,
           host: tally.host,
@@ -77,11 +76,9 @@ export default new Vuex.Store({
 
         connection.onopen = function(event) {
           newTally.connectionState = 'CONNECTED';
-          console.log("CONNECTED")
         }
         connection.onclose = function(event) {
           newTally.connectionState = 'CLOSED';
-          console.log("CLOSED")
         }
         newTally.connection = connection;
         state.tallys.push(newTally)

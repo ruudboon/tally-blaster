@@ -384,7 +384,7 @@ void setLedColor(uint32_t color, bool ignoreDisabledLeds)
 void updateLedColor() {
     String message = getSettingAsString("ledState");
     webSocket.broadcastTXT(message);
-    if (ledState > STATUS_PROGRAM) {
+    if (ledState > STATUS) {
         setLedColor(status[ledState], true);
     } else {
         setLedColor(status[ledState]);
