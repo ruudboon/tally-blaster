@@ -1,3 +1,4 @@
+#include <FS.h>
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
@@ -7,6 +8,7 @@
 #include <WebSocketsServer.h>
 #include <WiFiClient.h>
 #include <Ticker.h>
+
 
 #define PIXEL_PIN       D2
 #define RESET_PIN       4
@@ -22,6 +24,8 @@
 #define STATUS_CONNECTWIFI  4
 #define STATUS_CONNECTVMIX  5
 
+#define CONFIG_FILENAME "/tally-config.cfg"
+#define VERSION         "0.0.1"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
@@ -96,6 +100,9 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  Serial.println("vMix Tally NodeMCU v" + String(VERSION));
+  SPIFFS.begin();
+  readConfig();
   setupLeds();
   setLedColor(status[STATUS_CONNECTWIFI]);
   ledState = STATUS_CONNECTWIFI;
@@ -148,6 +155,30 @@ void setup() {
   updateLedColor();
 }
 
+void saveConfig()
+{
+    File file = SPIFFS.open(CONFIG_FILENAME, "w");
+    if (file) {
+        Serial.println("Writing config"); 
+        file.write((char*) &settings, sizeof(settings));
+        file.close();
+    } else {
+        Serial.println("Opening config for saved failed"); 
+    }
+}
+
+void readConfig()
+{
+    File file = SPIFFS.open(CONFIG_FILENAME, "r");
+    if (file) {
+        Serial.println("Reading config"); 
+        file.readBytes((char*) &settings, sizeof(settings));
+        file.close();
+    } else {
+        Serial.println("Opening config for read [failed"); 
+    }
+}
+
 void startPulsating()
 {
   ticker.attach(0.5, tick);
@@ -195,14 +226,14 @@ String getSettingAsString(String settingKey)
     if (settingKey == "viewerLedEnabled") {
         String boolAsString = String("false");
         if (settings.viewerLedEnabled) {
-            boolAsString = 'true';
+            boolAsString = "true";
         }
         return settingKey + ":" + boolAsString;
     }
     if (settingKey == "cameraLedEnabled") {
         String boolAsString = String("false");
         if (settings.cameraLedEnabled) {
-            boolAsString = 'true';
+            boolAsString = "true";
         }
         return settingKey + ":" + boolAsString;
     }
@@ -250,6 +281,9 @@ void updateSetting(String payload)
         } else {
             settings.viewerLedEnabled = false;
         }
+        updateLedColor();
+        String message = getSettingAsString("viewerLedEnabled");
+        webSocket.broadcastTXT(message);
         return;
     }
     if (settingKey == "cameraLedEnabled") {
@@ -258,14 +292,22 @@ void updateSetting(String payload)
         } else {
             settings.cameraLedEnabled = false;
         }
+        setLedColor(status[ledState]);
+        String message = getSettingAsString("cameraLedEnabled");
+        webSocket.broadcastTXT(message);
         return;
     }
     if (settingKey == "vmixPort") {
         settings.vmixPort = settingValue.toInt();
+        String message = getSettingAsString("vmixPort");
+        webSocket.broadcastTXT(message);
         return;
     }
     if (settingKey == "vmixHost") {
         settingValue.toCharArray(settings.vmixHost, 63);
+
+        String message = getSettingAsString("vmixHost");
+        webSocket.broadcastTXT(message);
         vmixConnection.stop();
         return;
     }
@@ -288,7 +330,10 @@ void updateSetting(String payload)
         return;
     }
     if (settingKey == "reboot") {
-        digitalWrite(RESET_PIN, LOW);
+        ESP.reset();
+    }
+    if (settingKey == "save") {
+        saveConfig();
     }
 }
 
@@ -339,7 +384,11 @@ void setLedColor(uint32_t color, bool ignoreDisabledLeds)
 void updateLedColor() {
     String message = getSettingAsString("ledState");
     webSocket.broadcastTXT(message);
-    setLedColor(status[ledState]);
+    if (ledState > STATUS_PROGRAM) {
+        setLedColor(status[ledState], true);
+    } else {
+        setLedColor(status[ledState]);
+    }
 }
 
 // Set led intensity from 0 to 255;
@@ -398,19 +447,20 @@ void handleVmix(String data)
 void connectTovMix()
 {
  Serial.print("Connecting to vMix on ");
- Serial.print('172.20.0.193');
+ Serial.print(String(settings.vmixHost) + ":" + settings.vmixPort);
  Serial.print("...");
  ledState = STATUS_CONNECTVMIX;
  updateLedColor();
  startPulsating();
 
- if (vmixConnection.connect("172.20.0.193", settings.vmixPort))
+ if (vmixConnection.connect(settings.vmixHost, settings.vmixPort))
  {
    Serial.println(" Connected!");
    Serial.println("------------");
    stopPulsating();
    ledState = STATUS_CONNECTED;
    updateLedColor();
+   setLedBrightness(settings.brightness);
    vmixConnection.println("SUBSCRIBE TALLY");
  }
  else

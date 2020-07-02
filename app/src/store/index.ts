@@ -13,21 +13,21 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     tallys: [
-      {
-        name: "NAME",
-        host: "HOST",
-        port: "123",
-        address: "127.0.0.1",
-        connected: true,
-        brightness: 255,
-        tallyNumber: 2,
-        viewerLedEnabled: true,
-        cameraLedEnabled: true,
-        vmixPort: 81,
-        vmixHost: "192.168.0.1",
-        connection: null,
-        ledState: 0,
-      }
+      // {
+      //   name: "NAME",
+      //   host: "HOST",
+      //   port: "123",
+      //   address: "127.0.0.1",
+      //   connected: true,
+      //   brightness: 255,
+      //   tallyNumber: 2,
+      //   viewerLedEnabled: true,
+      //   cameraLedEnabled: true,
+      //   vmixPort: 81,
+      //   vmixHost: "192.168.0.1",
+      //   connection: null,
+      //   ledState: 0,
+      // }
     ] as any
   },
   mutations: {
@@ -59,8 +59,9 @@ export default new Vuex.Store({
             case "cameraLedEnabled" :
               if (data[1] == "false") {
                 newTally[data[0]] = data[1] = false;
+              } else {
+                newTally[data[0]] = true;
               }
-              newTally[data[0]] = true;
               break;
             case "vmixPort" :
             case "tallyNumber" :

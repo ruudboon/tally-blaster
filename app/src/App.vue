@@ -15,9 +15,9 @@
         />
       </div>
       <v-spacer></v-spacer>
-      <v-text-field label="vMix IP" hide-details="auto"></v-text-field>
-      <v-btn @click="findTallys">Set All</v-btn>
-      <v-btn @click="findTallys">Save All</v-btn>
+      <v-text-field label="vMix IP" v-model="vMixHost" hide-details="auto"></v-text-field>
+      <v-btn @click="setAll(vMixHost)">Set All</v-btn>
+      <v-btn @click="saveAll()">Save All</v-btn>
       <v-spacer></v-spacer>
       <v-btn @click="findTallys">Rescan</v-btn>
     </v-app-bar>
@@ -47,6 +47,7 @@
                         class="ma-2 white--text"
                         fab
                         :disabled="tally.connectionState != 'CONNECTED'"
+                        @click="toggleLed('cameraLedEnabled', tally)"
                 >
                   <v-icon dark>mdi-headset</v-icon>
                 </v-btn>
@@ -55,6 +56,7 @@
                         class="ma-2 white--text"
                         fab
                         :disabled="tally.connectionState != 'CONNECTED'"
+                        @click="toggleLed('viewerLedEnabled', tally)"
                 >
                   <v-icon dark>mdi-camera-front-variant</v-icon>
                 </v-btn>
@@ -67,7 +69,23 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" sm="4" offset-sm="8">
+              <v-col cols="8" sm="6">
+                <v-text-field
+                        v-model="tally.vmixHost"
+                        label="vMix Host"
+                        :disabled="tally.connectionState != 'CONNECTED'"
+                        @change="vMixHostChanged(tally)"
+                />
+              </v-col>
+              <v-col cols="4" sm="2">
+                <v-text-field
+                        v-model.number="tally.vmixPort"
+                        label="vMix Port"
+                        :disabled="tally.connectionState != 'CONNECTED'"
+                        @change="vMixPortChanged(tally)"
+                />
+              </v-col>
+              <v-col cols="12" sm="4">
                   <v-text-field
                           v-model.number="tally.tallyNumber"
                           label="Tally ID"
@@ -105,7 +123,7 @@
               <v-icon>mdi-restart</v-icon>
             </v-btn>
 
-            <v-btn value="save" :disabled="tally.connectionState != 'CONNECTED'">
+            <v-btn value="save" :disabled="tally.connectionState != 'CONNECTED'" @click="save(tally)">
               <span>Save</span>
               <v-icon>mdi-content-save</v-icon>
             </v-btn>
@@ -124,7 +142,8 @@ export default Vue.extend({
 
   data: function () {
     return {
-      connections: {}
+      connections: {},
+      vMixHost: '192.168.0.1'
     }
   },
   computed: {
@@ -168,6 +187,14 @@ export default Vue.extend({
       const data = "tallyNumber:" + tally.tallyNumber;
       tally.connection.send(data);
     },
+    vMixHostChanged(tally) {
+      const data = "vmixHost:" + tally.vmixHost;
+      tally.connection.send(data);
+    },
+    vMixPortChanged(tally) {
+      const data = "vmixPort:" + tally.vmixPort;
+      tally.connection.send(data);
+    },
     getColor(status) {
       switch (status) {
         case 0 : //STATUS_CONNECTED: Black is connected
@@ -196,7 +223,31 @@ export default Vue.extend({
     },
     reboot(tally) {
       tally.connection.send("reboot");
-    }
+    },
+    save(tally) {
+      tally.connection.send("save");
+    },
+    toggleLed(type, tally) {
+      let data = type + ":";
+      console.log(tally[type]);
+      if (tally[type]) {
+        data += "false";
+      } else {
+        data += "true";
+      }
+      tally.connection.send(data);
+    },
+    setAll(ip) {
+      const data = "vmixHost:" + ip;
+      this.tallys.forEach( tally => {
+        tally.connection.send(data);
+      })
+    },
+    saveAll() {
+      this.tallys.forEach( tally => {
+        tally.connection.send("save");
+      })
+    },
   }
 });
 </script>
