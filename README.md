@@ -1,23 +1,33 @@
 # vMix Tally NodeMCU
 Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB. 
 
-## How It Works
+## Features
+- Camera tally LED & Host tally LED
+- Brightness control
+- Locate function
+- Save settings permanent (App not needed during production)
+- Autodiscover tally nodes using Zerconf/Bonjour
+- Configure app to control and monitor all nodes
+
+
+### How It Works
 - When your ESP starts up, it sets it up in Station mode and tries to connect to a previously saved Access Point
 - if this is unsuccessful (or no previous network saved) it moves the ESP into Access Point mode and spins up a DNS and WebServer (default ip 192.168.4.1)
 - using any wifi enabled device with a browser (computer, phone, tablet) connect to the newly created Access Point (ESP*)
 - because of the Captive Portal and the DNS server you will either get a 'Join to network' type of popup or get any domain you try to access redirected to the configuration portal
-- choose the access points that connects your vMix, enter password, click save
+- choose the access points that connects your vMix (must have DHCP), enter password, click save
 - start Configuration App (Currently MacOS only) and scan for Tally Nodes
 - configure your nodes with the vMix IP and tally number.
 
-## Needed Hardware
+
+### Needed Hardware
 - NodeMCU v3
 - 2 NeoPixels Mini PCB
 - Usb cable
 - USB powersupply or Powerbank
 - WiFi connection to your vMix computer
 
-## Flashing NodeMCU (V3)
+### Flashing NodeMCU (V3)
 - Download latest release
 - Unpack zip
 - Open vmix-tally.ino with arduino IDE
@@ -40,6 +50,14 @@ Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB.
 - Ask vMix for ZeroConf broadcast to allow auto connect
 - Create demonstration video
 
-##Inspired by
+# Led colors
+- CONNECTED: LEDS off
+- PREVIEW: Green
+- PROGRAM: Red
+- LOCATE: White Blinking
+- CONNECTING WIFI: Purple Blinkning
+- CONNECTING VMIX: Orange Blinkning
+
+### Inspired by
 * [Arduino-vMix-tally](https://github.com/ThomasMout/Arduino-vMix-tally)
 * [WiFiManager](https://github.com/tzapu/WiFiManager)
