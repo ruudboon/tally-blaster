@@ -100,6 +100,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  WiFi.mode(WIFI_AP_STA);
   Serial.println("vMix Tally NodeMCU v" + String(VERSION));
   SPIFFS.begin();
   readConfig();
@@ -135,6 +136,8 @@ void setup() {
   
   //Enable wifi led
   digitalWrite(BUILTIN_LED, LOW);
+  //Enable staion 
+  WiFi.mode(WIFI_STA);
 
   if (MDNS.begin(hostname)) {
     Serial.println("mDNS started: vmixtally");  
@@ -384,7 +387,7 @@ void setLedColor(uint32_t color, bool ignoreDisabledLeds)
 void updateLedColor() {
     String message = getSettingAsString("ledState");
     webSocket.broadcastTXT(message);
-    if (ledState > STATUS) {
+    if (ledState > STATUS_PROGRAM) {
         setLedColor(status[ledState], true);
     } else {
         setLedColor(status[ledState]);
@@ -459,6 +462,7 @@ void connectTovMix()
    Serial.println("------------");
    stopPulsating();
    ledState = STATUS_CONNECTED;
+   WiFi.mode(WIFI_STA);
    updateLedColor();
    setLedBrightness(settings.brightness);
    vmixConnection.println("SUBSCRIBE TALLY");
