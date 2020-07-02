@@ -58,6 +58,10 @@ Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB.
 - CONNECTING WIFI: Purple Blinkning
 - CONNECTING VMIX: Orange Blinkning
 
+#vMix Tally Control app
+![vMix Tally Control app](https://user-images.githubusercontent.com/7444246/86400131-613aea00-bca8-11ea-897d-dd0e05ca8eaa.png)
+
+
 ### Inspired by
 * [Arduino-vMix-tally](https://github.com/ThomasMout/Arduino-vMix-tally)
 * [WiFiManager](https://github.com/tzapu/WiFiManager)
