@@ -11,7 +11,9 @@ module.exports = {
           '../../node_modules',
           './node_modules'
       ],
-      nodeIntegration: true
+      nodeIntegration: true,
+      appId: "io.ruudboon.vmix-tally-app",
+      productName: "vMix Tally App"
     }
   },
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/'
