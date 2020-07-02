@@ -1,5 +1,4 @@
 'use strict'
-
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import {
   createProtocol,
@@ -9,6 +8,7 @@ import path from 'path';
 import Bonjour from 'bonjour';
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+declare const __static: string;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -24,7 +24,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: __dirname + '/assets/logo.png',
+    icon: path.join(__static, 'icon.png'),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info

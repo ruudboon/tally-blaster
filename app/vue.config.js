@@ -13,7 +13,13 @@ module.exports = {
       ],
       nodeIntegration: true,
       appId: "io.ruudboon.vmix-tally-app",
-      productName: "vMix Tally App"
+      productName: "vMix Tally App",
+      files: [
+        "build/*"
+      ],
+      builderOptions: {
+        publish: ['github']
+      }
     }
   },
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/'
