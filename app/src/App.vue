@@ -136,6 +136,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex'
+import { ipcRenderer } from 'electron'
 
 export default Vue.extend({
   name: 'App',
@@ -160,7 +161,7 @@ export default Vue.extend({
   },
   methods: {
     findTallys: function (event) {
-      const tallys = window.ipcRenderer.sendSync('get-vmix-tallys');
+      const tallys = ipcRenderer.sendSync('get-vmix-tallys');
       this.$store.dispatch('addTallys', tallys);
     },
     getTitle(tally) {
