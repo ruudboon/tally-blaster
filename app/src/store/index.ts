@@ -74,10 +74,10 @@ export default new Vuex.Store({
           }
         }
 
-        connection.onopen = function(event) {
+        connection.onopen = function() {
           newTally.connectionState = 'CONNECTED';
         }
-        connection.onclose = function(event) {
+        connection.onclose = function() {
           newTally.connectionState = 'CLOSED';
         }
         newTally.connection = connection;
