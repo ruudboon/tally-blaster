@@ -11,8 +11,7 @@ module.exports = {
           '../../node_modules',
           './node_modules'
       ],
-      nodeIntegration: true,
-      preload: 'src/preload.js'
+      nodeIntegration: true
     }
   },
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/'
