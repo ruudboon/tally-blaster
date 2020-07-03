@@ -29,7 +29,7 @@ jobs:
       - name: Setup env (Windows)
         run: |
           dir "C:\Program Files (x86)"
-          echo "$BONJOUR_SDK_HOME"
+          Write-Output "The build number is $env:BONJOUR_SDK_HOME"
         if: matrix.os == 'windows-latest'
 
       - name: Install Node.js, NPM and Yarn
