@@ -21,8 +21,8 @@ jobs:
 
       - name: Install Dependencies (Windows)
         run: |
-          choco install bonjour
-          D:\a\vmix-tally-nodemcu\vmix-tally-nodemcu\3thparty\bonjoursdksetup.exe
+          msiexec /i 3thparty\bonjourcore2.msi /qn
+          3thparty\bonjoursdksetup.exe /quiet
         if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
