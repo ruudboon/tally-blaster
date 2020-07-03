@@ -23,13 +23,13 @@ jobs:
         run: |
           msiexec /i 3thparty\bonjourcore2.msi /qn
           3thparty\bonjoursdksetup.exe /quiet
-          Write-Output "::set-env name=BONJOUR_SDK_HOME::C:\Program Files (x86)\Bonjour SDK"
+          Write-Output "::set-env name=INCLUDE::C:\Program Files (x86)\Bonjour SDK;%INCLUDE%"
         if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
         run: |
           dir "C:\Program Files (x86)"
-          Write-Output "The build number is $env:BONJOUR_SDK_HOME"
+          Write-Output "$env:INCLUDE"
         if: matrix.os == 'windows-latest'
 
       - name: Install Node.js, NPM and Yarn
