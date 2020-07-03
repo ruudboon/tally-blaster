@@ -18,7 +18,9 @@ module.exports = {
         "build/*"
       ],
       builderOptions: {
-        publish: ['github']
+        win: {
+          "publish": ["github"]
+        }
       }
     }
   },
