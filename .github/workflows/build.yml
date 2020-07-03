@@ -20,7 +20,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Windows)
-        run: D:\a\vmix-tally-nodemcu\vmix-tally-nodemcu\3thparty\bonjoursdksetup.exe /quiet
+        run: D:\a\vmix-tally-nodemcu\vmix-tally-nodemcu\3thparty\bonjoursdksetup.exe
         if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
