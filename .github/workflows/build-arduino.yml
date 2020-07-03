@@ -1,0 +1,32 @@
+# This is the name of the workflow, visible on GitHub UI.
+name: Arduino
+
+# Here we tell GitHub to run the workflow when a commit
+# is pushed or a Pull Request is opened.
+on: [push, pull_request]
+
+jobs:
+  test-matrix:
+    strategy:
+      matrix:
+        arduino-platform: ["esp8266:esp8266"]
+        include:
+          # This works like this: when the platformn is "arduino:samd", the
+          # variable `fqbn` is set to "arduino:samd:nano_33_iot".
+          - arduino-platform: "esp8266:esp8266"
+            fqbn: "esp8266:esp8266:nodeMCU"
+    runs-on: linux-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.0.0
+
+      - name: Install platform
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install ${{ matrix.arduino-platform }}
+
+      - name: Compile Sketch
+        run: arduino-cli compile --fqbn ${{ matrix.fqbn }} ./vmix-tally/vmix-tally.ino
