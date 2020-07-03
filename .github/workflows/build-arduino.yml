@@ -26,6 +26,7 @@ jobs:
       - name: Install platform
         run: |
           arduino-cli core update-index
+          arduino-cli core --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
           arduino-cli core install ${{ matrix.arduino-platform }}
 
       - name: Compile Sketch
