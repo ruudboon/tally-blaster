@@ -1,4 +1,4 @@
-![Build/release](https://github.com/ruudboon/vmix-tally-nodemcu/workflows/Build/release/badge.svg)
+![Build](https://github.com/ruudboon/vmix-tally-nodemcu/workflows/Build/release/badge.svg)
 # vMix Tally NodeMCU
 Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB. 
 
