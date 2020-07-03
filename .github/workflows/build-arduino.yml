@@ -17,4 +17,4 @@ jobs:
           arduino-board-fqbn: esp8266:esp8266:nodemcuv2
           sketch-names: vmix-tally.ino
           platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
-          required-libraries: Adafruit NeoPixel, WiFiManager
+          required-libraries: Adafruit NeoPixel,WiFiManager
