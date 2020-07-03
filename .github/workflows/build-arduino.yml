@@ -15,7 +15,7 @@ jobs:
           # variable `fqbn` is set to "arduino:samd:nano_33_iot".
           - arduino-platform: "esp8266:esp8266"
             fqbn: "esp8266:esp8266:nodeMCU"
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@master
