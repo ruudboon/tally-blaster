@@ -40,3 +40,4 @@ jobs:
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
           package_root: ./app
+          BONJOUR_SDK_HOME: "C:\Program Files\Bonjour SDK"
