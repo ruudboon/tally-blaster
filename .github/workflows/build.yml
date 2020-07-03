@@ -20,15 +20,15 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install Dependencies (Windows)
-        run: run 3thparty\bonjoursdksetup.exe /quiet
+        run: 3thparty\bonjoursdksetup.exe /quiet
         if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
-        run: echo "::set-env name=BONJOUR_SDK_HOME::C:\Program Files (x86)\Bonjour"
+        run: echo "::set-env name=BONJOUR_SDK_HOME::C:\Program Files (x86)\Bonjour SDK"
         if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
-        run: dir "C:\Program Files (x86)\Bonjour"
+        run: dir "C:\Program Files (x86)"
         if: matrix.os == 'windows-latest'
 
       - name: Install Node.js, NPM and Yarn
