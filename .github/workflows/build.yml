@@ -28,7 +28,8 @@ jobs:
 
       - name: Setup env (Windows)
         run: |
-          dir "C:\Program Files (x86)\Bonjour SDK"
+          dir "C:\Program Files (x86)\Bonjour SDK\Bin"
+          dir "C:\Program Files"
           Write-Output "$env:INCLUDE"
         if: matrix.os == 'windows-latest'
 
