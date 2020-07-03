@@ -27,9 +27,9 @@ jobs:
 
       - name: set environment variables
         uses: allenevans/set-env@v1.0.0
+        if: matrix.os == 'windows-latest'
         with:
           BONJOUR_SDK_HOME: 'C:\Program Files (x86)\Bonjour SDK'
-        if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
         run: dir "C:\Program Files (x86)"
