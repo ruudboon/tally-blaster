@@ -23,13 +23,12 @@ jobs:
         run: |
           msiexec /i 3thparty\bonjourcore2.msi /qn
           3thparty\bonjoursdksetup.exe /quiet
-          Write-Output "::set-env name=INCLUDE::C:\Program Files (x86)\Bonjour SDK;$env:INCLUDE"
+          Write-Output "::set-env name=INCLUDE::C:\Program Files\Bonjour SDK;$env:INCLUDE"
         if: matrix.os == 'windows-latest'
 
       - name: Setup env (Windows)
         run: |
-          dir "C:\Program Files (x86)\Bonjour SDK\Bin"
-          dir "C:\Program Files"
+          dir "C:\Program Files\Bonjour SDK"
           Write-Output "$env:INCLUDE"
         if: matrix.os == 'windows-latest'
 
