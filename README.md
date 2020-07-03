@@ -32,7 +32,7 @@ Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB.
 - Download latest release
 - Unpack zip
 - Open vmix-tally.ino with arduino IDE
-- Install the extra libraries (WiFiManager by tzapu 2.0.3-alpha, Adafruit NeoPixel by Adafruit 1.5.0)
+- Install the extra libraries (WiFiManager by tzapu 2.0.3-alpha, Adafruit NeoPixel by Adafruit 1.5.0, )
 - Flash NodeMCU
 
 ## NodeMCU pin layout
