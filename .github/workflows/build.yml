@@ -23,6 +23,10 @@ jobs:
         run: choco install bonjour
         if: matrix.os == 'windows-latest'
 
+      - name: Setup env (Windows)
+        run: echo "::set-env name=BONJOUR_SDK_HOME::C:\Program Files\Bonjour SDK"
+        if: matrix.os == 'windows-latest'
+
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
@@ -30,8 +34,6 @@ jobs:
 
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
-        env:
-          BONJOUR_SDK_HOME: "C:\Program Files\Bonjour SDK"
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
