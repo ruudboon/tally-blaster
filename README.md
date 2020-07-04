@@ -71,3 +71,4 @@ This project will grow faster with your help. Donations and sponsorships allow m
 ### Inspired by
 * [Arduino-vMix-tally](https://github.com/ThomasMout/Arduino-vMix-tally)
 * [WiFiManager](https://github.com/tzapu/WiFiManager)
+* [Automatic Update Server](https://www.instructables.com/id/Set-Up-an-ESP8266-Automatic-Update-Server/)
