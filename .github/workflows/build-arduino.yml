@@ -20,4 +20,6 @@ jobs:
           required-libraries: Adafruit NeoPixel,WiFiManager,WebSockets
 
       - name: Upload artifacts
-        run: ls /home/runner/test
+        run: |
+          ls
+          ls /github/home/arduino_ide
