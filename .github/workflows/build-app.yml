@@ -41,7 +41,11 @@ jobs:
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-
           package_root: ./app
-
           use_vue_cli: true
+
+      - name: Add artifacts
+        run: |
+          ls
+          ls app/build
+          ls build
