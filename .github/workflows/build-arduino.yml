@@ -21,5 +21,4 @@ jobs:
 
       - name: Upload artifacts
         run: |
-          ls
-          ls /github/home/arduino_ide
+          ls vmix-tally
