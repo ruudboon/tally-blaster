@@ -44,7 +44,19 @@ jobs:
           package_root: ./app
           use_vue_cli: true
 
-      - name: Add artifacts
+      - name: Add artifacts Ubuntu
         run: |
           ls app/dist_electron
-          ls app/dist
+          ls app/dist_electron/bundled
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Add artifacts Ubuntu
+        run: |
+          ls app/dist_electron
+          ls app/dist_electron/bundled
+        if: matrix.os == 'macos-latest'
+      - name: Add artifacts Ubuntu
+        run: |
+          ls app/dist_electron
+          ls app/dist_electron/bundled
+        if: matrix.os == 'windows-latest'
