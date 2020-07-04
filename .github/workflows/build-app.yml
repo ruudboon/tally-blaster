@@ -45,7 +45,6 @@ jobs:
           use_vue_cli: true
 
       - name: Add artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: vmix-tally.bin
-          path: vmix-tally/build/esp8266.esp8266.nodemcuv2/vmix-tally.ino.bin
+        run: |
+          ls app/dist_electron
+          ls app/dist
