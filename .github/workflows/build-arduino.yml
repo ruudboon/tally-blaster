@@ -19,8 +19,8 @@ jobs:
           platform-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
           required-libraries: Adafruit NeoPixel,WiFiManager,WebSockets
 
-      - name: Upload artifacts
-        run: |
-          find . -type f -name "*.bin"
-          ls -la vmix-tally
-          ls -la vmix-tally/build
+      - name: Add artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: vmix-tally.bin
+          path: vmix-tally/build/esp8266.esp8266.nodemcuv2/vmix-tally.ino.bin
