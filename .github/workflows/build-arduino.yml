@@ -21,4 +21,6 @@ jobs:
 
       - name: Upload artifacts
         run: |
-          ls vmix-tally/build
+          find . -type f -name "*.bin"
+          ls -la vmix-tally
+          ls -la vmix-tally/build
