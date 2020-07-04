@@ -47,5 +47,5 @@ jobs:
       - name: Add artifacts
         run: |
           ls
-          ls app/build
-          ls build
+          ls app
+          ls app/dist
