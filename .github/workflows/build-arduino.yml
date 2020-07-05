@@ -25,12 +25,12 @@ jobs:
           name: vmix-tally.bin
           path: vmix-tally/build/esp8266.esp8266.nodemcuv2/vmix-tally.ino.bin
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.github_token }}
-          file: vmix-tally/build/esp8266.esp8266.nodemcuv2/vmix-tally.ino.bin
-          asset_name: tally-${GITHUB_REF/refs\/tags\//}-esp8266-nodemcuv2.bin
-          tag: ${{ github.ref }}
-          overwrite: true
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#      - name: Upload binaries to release
+#        uses: svenstaro/upload-release-action@v2
+#        with:
+#          repo_token: ${{ secrets.github_token }}
+#          file: vmix-tally/build/esp8266.esp8266.nodemcuv2/vmix-tally.ino.bin
+#          asset_name: tally-${GITHUB_REF/refs\/tags\//}-esp8266-nodemcuv2.bin
+#          tag: ${{ github.ref }}
+#          overwrite: true
+#        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
