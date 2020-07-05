@@ -18,9 +18,18 @@ module.exports = {
         "build/*"
       ],
       builderOptions: {
-        win: {
-          "publish": ["github"]
-        }
+        appId: "io.ruudboon.tally",
+        productName: "tally",
+        publish: [
+          {
+            provider: "github",
+            owner: "ruudboon",
+            repo: "ruudboon",
+            releaseType: "draft",
+            channel: "edge",
+            url: "tally.ruudboon.io"
+          }
+        ],
       }
     }
   },
