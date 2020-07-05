@@ -24,7 +24,7 @@ module.exports = {
           {
             provider: "github",
             owner: "ruudboon",
-            repo: "ruudboon",
+            repo: "tally",
             releaseType: "draft",
             channel: "edge",
             url: "tally.ruudboon.io"
