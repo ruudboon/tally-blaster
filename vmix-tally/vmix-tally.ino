@@ -24,7 +24,7 @@
 #define STATUS_CONNECTVMIX  5
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.2.0"
+#define VERSION         "0.2.1"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
@@ -98,7 +98,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-//   WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP_STA);
   Serial.println("vMix Tally NodeMCU v" + String(VERSION));
   SPIFFS.begin();
   readConfig();
@@ -132,10 +132,10 @@ void setup() {
   WiFi.hostname(hostname);
   Serial.println("Hostname: " + hostname);
   
+  wifiManager.startConfigPortal();
+
   //Enable wifi led
   digitalWrite(BUILTIN_LED, LOW);
-  //Enable staion 
-//   WiFi.mode(WIFI_AP_STA);
 
   if (MDNS.begin(hostname)) {
     Serial.println("mDNS started: vmixtally");  
@@ -154,6 +154,8 @@ void setup() {
   vmixClient->onData(&vmixHandleData, vmixClient);
   vmixClient->onConnect(&onVmixConnect, vmixClient);
   vmixClient->onDisconnect(&onVmixDisconnect, vmixClient);
+  vmixClient->onError(&handleVmixError, vmixClient);
+  vmixClient->onTimeout(&handleTimeOut, vmixClient);
   connectTovMix();
 }
 
@@ -421,6 +423,18 @@ void setLedBrightness(int intensity)
 // 	os_timer_arm(&intervalTimer, 2000, true); // schedule for reply to server at next 2s
 // }
 
+static void replyToVmix(void* arg) {
+	AsyncClient* client = reinterpret_cast<AsyncClient*>(arg);
+
+	// send reply
+	if (client->space() > 32 && client->canSend()) {
+		char message[32];
+		sprintf(message, "this is from %s", WiFi.localIP().toString().c_str());
+		client->add(message, strlen(message));
+		client->send();
+	}
+}
+
 void onVmixConnect(void* arg, AsyncClient* client) {
 	Serial.printf("\n client has been connected to %s on port %d \n", settings.vmixHost, settings.vmixPort);
     Serial.println(" Connected!");
@@ -428,23 +442,30 @@ void onVmixConnect(void* arg, AsyncClient* client) {
 
     stopPulsating();
     ledState = STATUS_CONNECTED;
-    // WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_STA);
     updateLedColor();
     setLedBrightness(settings.brightness);
     char message[18] = "SUBSCRIBE TALLY\r\n";
     Serial.println(message);
-    // vmixClient->add(message, strlen(message));
-    // vmixClient->send();
+    vmixClient->add(message, strlen(message));
+    vmixClient->send();
 }
 
 void onVmixDisconnect(void* arg, AsyncClient* c) {
   Serial.print("We're disconnected!\n");
+  WiFi.mode(WIFI_AP_STA);
+  connectTovMix();
 }
 
+static void handleTimeOut(void* arg, AsyncClient* client, uint32_t time) {
+	Serial.printf("\n client ACK timeout ip: %s \n", client->remoteIP().toString().c_str());
+}
 
 // Handle vmix data
 void vmixHandleData(void* arg, AsyncClient* client, void *data, size_t len)
 {
+  Serial.write("vmix Data:");
+  Serial.write((uint8_t*)data, len);
   uint8_t* d = reinterpret_cast<uint8_t*>(data);
   String vmixData = (char*)data;
   Serial.println(vmixData);
@@ -483,10 +504,14 @@ void vmixHandleData(void* arg, AsyncClient* client, void *data, size_t len)
   }
 }
 
+ /* clients events */
+static void handleVmixError(void* arg, AsyncClient* client, int8_t error) {
+	Serial.printf("\n connection error %s from client %s \n", client->errorToString(error), client->remoteIP().toString().c_str());
+}
+
 //Connect to vMix instance
 void connectTovMix()
 {
- vmixClient->stop(); 
  Serial.print("Connecting to vMix on ");
  Serial.print(String(settings.vmixHost) + ":" + settings.vmixPort);
  Serial.print("...");
