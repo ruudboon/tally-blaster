@@ -24,7 +24,7 @@
 #define STATUS_CONNECTVMIX  5
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.2.1"
+#define VERSION         "0.2.2"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
@@ -256,6 +256,9 @@ String getSettingAsString(String settingKey)
     if (settingKey == "ledState") {
         return settingKey + ":" + String(ledState);
     }
+    if (settingKey == "version") {
+        return settingKey + ":" + String(VERSION);
+    }
     return "";
 }
 
@@ -364,6 +367,9 @@ void sendAllSettings(uint8_t webSocketClientID)
     webSocket.sendTXT(webSocketClientID, reply);
 
     reply = getSettingAsString("ledState");
+    webSocket.sendTXT(webSocketClientID, reply);
+
+    reply = getSettingAsString("version");
     webSocket.sendTXT(webSocketClientID, reply);
 }
 

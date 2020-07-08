@@ -47,7 +47,8 @@ export default new Vuex.Store({
           vmixHost: 0,
           connection: {},
           connectionState: 'CLOSED',
-          ledState: 0
+          ledState: 0,
+          version: 'v?'
         }
         const connection = new WebSocket('ws:/' + newTally.address + ":" + newTally.port);
         newTally.connectionState = 'CONNECTING';
@@ -70,6 +71,9 @@ export default new Vuex.Store({
               break;
             case "vmixHost":
               newTally[data[0]] = data[1];
+              break;
+            case "version":
+              newTally[data[0]] = 'v' + data[1];
               break;
           }
         }

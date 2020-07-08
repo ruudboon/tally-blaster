@@ -36,7 +36,7 @@
               <v-col cols="12" sm="8">
                 <v-list-item two-line>
                   <v-list-item-content>
-                    <v-list-item-title class="headline">{{ tally.name }} </v-list-item-title>
+                    <v-list-item-title class="headline">{{ tally.name }} ({{ tally.version }})</v-list-item-title>
                     <v-list-item-subtitle>{{ getTitle(tally)}}</v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
