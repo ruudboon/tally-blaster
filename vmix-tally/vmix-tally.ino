@@ -24,7 +24,7 @@
 #define STATUS_CONNECTVMIX  5
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.2.2"
+#define VERSION         "0.2.3"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
@@ -132,7 +132,7 @@ void setup() {
   WiFi.hostname(hostname);
   Serial.println("Hostname: " + hostname);
   
-  wifiManager.startConfigPortal();
+//  wifiManager.startConfigPortal("OnDemandAP");
 
   //Enable wifi led
   digitalWrite(BUILTIN_LED, LOW);
@@ -144,6 +144,8 @@ void setup() {
     } else {
       Serial.println("mDNS failed registering");
     }
+  } else {
+    Serial.println("Unable to start MDNS");
   }
   MDNS.update();
 
