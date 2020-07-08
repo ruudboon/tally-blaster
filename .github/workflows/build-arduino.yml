@@ -11,6 +11,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Checkout custom library
+        uses: actions/checkout@v2
+        with:
+          repository: me-no-dev/ESPAsyncTCP
+          ref: master
+          path: CustomLibrary # must contain string "Custom"
+
       - name: Compile all examples
         uses: ArminJo/arduino-test-compile@v2
         with:

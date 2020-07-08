@@ -1,14 +1,13 @@
 #include <FS.h>
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <DNSServer.h>
-#include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager
 #include <Adafruit_NeoPixel.h>
 #include <WebSocketsServer.h>
-#include <WiFiClient.h>
+#include <ESPAsyncTCP.h>
 #include <Ticker.h>
-
+#include <stdint.h>
 
 #define PIXEL_PIN       D2
 #define RESET_PIN       4
@@ -25,16 +24,15 @@
 #define STATUS_CONNECTVMIX  5
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.1.0"
+#define VERSION         "0.2.0"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
 
 // Init services
 Ticker ticker;
-ESP8266WebServer server(80);
 WebSocketsServer webSocket(81);
-WiFiClient vmixConnection;
+AsyncClient* vmixClient = new AsyncClient();
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(TOTAL_PIXELS, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 uint32_t status[6] = {
@@ -100,7 +98,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  WiFi.mode(WIFI_AP_STA);
+//   WiFi.mode(WIFI_AP_STA);
   Serial.println("vMix Tally NodeMCU v" + String(VERSION));
   SPIFFS.begin();
   readConfig();
@@ -137,7 +135,7 @@ void setup() {
   //Enable wifi led
   digitalWrite(BUILTIN_LED, LOW);
   //Enable staion 
-  WiFi.mode(WIFI_STA);
+//   WiFi.mode(WIFI_AP_STA);
 
   if (MDNS.begin(hostname)) {
     Serial.println("mDNS started: vmixtally");  
@@ -151,11 +149,12 @@ void setup() {
 
   startWebSocket(); 
   
-  server.on("/", handleSettings);
-  server.begin();
-  Serial.println("Server listening");
-  ledState = STATUS_CONNECTVMIX;
-  updateLedColor();
+  Serial.println("Websocket Server listening");
+
+  vmixClient->onData(&vmixHandleData, vmixClient);
+  vmixClient->onConnect(&onVmixConnect, vmixClient);
+  vmixClient->onDisconnect(&onVmixDisconnect, vmixClient);
+  connectTovMix();
 }
 
 void saveConfig()
@@ -304,6 +303,7 @@ void updateSetting(String payload)
         settings.vmixPort = settingValue.toInt();
         String message = getSettingAsString("vmixPort");
         webSocket.broadcastTXT(message);
+        connectTovMix();
         return;
     }
     if (settingKey == "vmixHost") {
@@ -311,12 +311,12 @@ void updateSetting(String payload)
 
         String message = getSettingAsString("vmixHost");
         webSocket.broadcastTXT(message);
-        vmixConnection.stop();
+        connectTovMix();
         return;
     }
     if (settingKey == "tallyNumber") {
         settings.tallyNumber = settingValue.toInt();
-        vmixConnection.stop();
+        connectTovMix();
         return;
     }
     if (settingKey == "brightness") {
@@ -401,122 +401,103 @@ void setLedBrightness(int intensity)
   pixels.show();
 }
 
+// static void replyToServer(void* arg) {
+// 	AsyncClient* vmixClient = reinterpret_cast<AsyncClient*>(arg);
+
+// 	// send reply
+// 	if (vmixClient->space() > 32 && vmixClient->canSend()) {
+// 		char message[32];
+// 		sprintf(message, "this is from %s", WiFi.localIP().toString().c_str());
+// 		vmixClient->add(message, strlen(message));
+// 		vmixClient->send();
+// 	}
+// }
+
+// /* event callbacks */
+// static void handleData(void* arg, AsyncClient* client, void *data, size_t len) {
+// 	Serial.printf("\n data received from %s \n", client->remoteIP().toString().c_str());
+// 	Serial.write((uint8_t*)data, len);
+
+// 	os_timer_arm(&intervalTimer, 2000, true); // schedule for reply to server at next 2s
+// }
+
+void onVmixConnect(void* arg, AsyncClient* client) {
+	Serial.printf("\n client has been connected to %s on port %d \n", settings.vmixHost, settings.vmixPort);
+    Serial.println(" Connected!");
+    Serial.println("------------");
+
+    stopPulsating();
+    ledState = STATUS_CONNECTED;
+    // WiFi.mode(WIFI_STA);
+    updateLedColor();
+    setLedBrightness(settings.brightness);
+    char message[18] = "SUBSCRIBE TALLY\r\n";
+    Serial.println(message);
+    // vmixClient->add(message, strlen(message));
+    // vmixClient->send();
+}
+
+void onVmixDisconnect(void* arg, AsyncClient* c) {
+  Serial.print("We're disconnected!\n");
+}
+
+
 // Handle vmix data
-void handleVmix(String data)
+void vmixHandleData(void* arg, AsyncClient* client, void *data, size_t len)
 {
+  uint8_t* d = reinterpret_cast<uint8_t*>(data);
+  String vmixData = (char*)data;
+  Serial.println(vmixData);
   // Check if server data is tally data
-  if (data.indexOf("TALLY") == 0)
+  if (vmixData.indexOf("TALLY") == 0)
   {
-    Serial.println(data);
-    char newState = data.charAt(settings.tallyNumber + 8);
+    char vMixTallyState = vmixData.charAt(settings.tallyNumber + 8);
 
-    // Check if tally state has changed
-    // if (currentState != newState)
+    switch (vMixTallyState)
     {
-    //   currentState = newState;
-
-      switch (newState)
-      {
-        case '0':
-          Serial.println("tally off");
-          ledState = STATUS_CONNECTED;
-          updateLedColor();
-          break;
-        case '1':
-          Serial.println("tally progam");
-          ledState = STATUS_PROGRAM;
-          updateLedColor();
-          break;
-        case '2':
-          Serial.println("tally preview");
-          ledState = STATUS_PREVIEW;
-          updateLedColor();
-          break;
-        default:
-          Serial.println("unknown - tally off");
-          ledState = STATUS_CONNECTED;
-          updateLedColor();
-      }
+      case '0':
+        Serial.println("tally off");
+        ledState = STATUS_CONNECTED;
+        updateLedColor();
+        break;
+      case '1':
+        Serial.println("tally progam");
+        ledState = STATUS_PROGRAM;
+        updateLedColor();
+        break;
+      case '2':
+        Serial.println("tally preview");
+        ledState = STATUS_PREVIEW;
+        updateLedColor();
+        break;
+      default:
+        Serial.println("unknown - tally off");
+        ledState = STATUS_CONNECTED;
+        updateLedColor();
     }
   }
   else
   {
     Serial.print("Response from vMix: ");
-    Serial.println(data);
+    Serial.println(vmixData);
   }
 }
 
 //Connect to vMix instance
 void connectTovMix()
 {
+ vmixClient->stop(); 
  Serial.print("Connecting to vMix on ");
  Serial.print(String(settings.vmixHost) + ":" + settings.vmixPort);
  Serial.print("...");
  ledState = STATUS_CONNECTVMIX;
  updateLedColor();
  startPulsating();
-
- if (vmixConnection.connect(settings.vmixHost, settings.vmixPort))
- {
-   Serial.println(" Connected!");
-   Serial.println("------------");
-   stopPulsating();
-   ledState = STATUS_CONNECTED;
-   WiFi.mode(WIFI_STA);
-   updateLedColor();
-   setLedBrightness(settings.brightness);
-   vmixConnection.println("SUBSCRIBE TALLY");
- }
- else
- {
-   Serial.println(" Not found!");
- }
+ 
+ vmixClient->connect(settings.vmixHost, settings.vmixPort);
 }
 
-void handleSettings() {
-  String html = "<!DOCTYPE html><html>";
-  html += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
-  html += "<style>";
-  html += "html { font-family: Helvetica; background-color: #000; color:#fff;}";
-  html += "body { text-align: center;}";
-  html += "form { width: 500px; text-align: left;}";
-  html += "h1 { text-size: 20px; }";
-  html += "</style>";
-  html += "<script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};function sendRGB() {  var r = parseInt(document.getElementById('r').value).toString(16);  var g = parseInt(document.getElementById('g').value).toString(16);  var b = parseInt(document.getElementById('b').value).toString(16);  if(r.length < 2) { r = '0' + r; }   if(g.length < 2) { g = '0' + g; }   if(b.length < 2) { b = '0' + b; }   var rgb = '#'+r+g+b;    console.log('RGB: ' + rgb); connection.send(rgb); }</script>";
-  html += "</head><body><form><fieldset>";
-  html += "<h1>vMix Tally settings for " + chipId +"</h1>";
-  html += "<input type=\"range\" min=\"0\" max=\"255\" name=\"intensity\" value=\"" + String(currentBrightness) +"\">";
-  html += "<input type=\"number\" name=\"tally\" min=\"1\" max=\"1000\">";
-  html += "</fieldset></form></body></html>";
-  
-  String message = "Number of args received:";
-  message += server.args();            //Get number of parameters
-  message += "\n";                            //Add a new line
-  
-  for (int i = 0; i < server.args(); i++) {
-    message += "Arg nº" + (String)i + " –> ";   //Include the current iteration value
-    message += server.argName(i) + ": ";     //Get the name of the parameter
-    message += server.arg(i) + "\n";              //Get the value of the parameter
-  } 
-  
-  server.send(200, "text/html", html);       //Response to the HTTP request
-}
 void loop() {
   MDNS.update();
   webSocket.loop();
-  server.handleClient();
-
-  while (vmixConnection.available())
-  {
-    String data = vmixConnection.readStringUntil('\r\n');
-    handleVmix(data);
-  }
-
-  if (!vmixConnection.connected())
-  {
-    vmixConnection.stop();
-
-    connectTovMix();
-    // lastCheck = millis();
-  }
 }
