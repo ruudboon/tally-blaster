@@ -12,14 +12,14 @@ module.exports = {
           './node_modules'
       ],
       nodeIntegration: true,
-      appId: "io.ruudboon.vmix-tally-app",
-      productName: "vMix Tally App",
+      appId: "io.ruudboon.tally-blaster",
+      productName: "Tally Blaster Control App",
       files: [
         "build/*"
       ],
       builderOptions: {
-        appId: "io.ruudboon.tally",
-        productName: "tally",
+        appId: "io.ruudboon.tally-blaster",
+        productName: "Tally Blaster Control App",
         publish: [
           {
             provider: "github",

@@ -1,5 +1,5 @@
-![Build](https://github.com/ruudboon/vmix-tally-nodemcu/workflows/Build/release/badge.svg)
-# vMix Tally NodeMCU
+![Build](https://github.com/ruudboon/tally-blaster/workflows/Build/release/badge.svg)
+# Tally Blaster
 Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB. 
 
 ## Features
@@ -64,8 +64,8 @@ This project will grow faster with your help. Donations and sponsorships allow m
 
 [Github Sponsor](https://github.com/sponsors/ruudboon). One-time donations are welcome through [PayPal](https://www.paypal.me/ruudboon).
 
-# vMix Tally Control app
-![vMix Tally Control app](https://user-images.githubusercontent.com/7444246/86400131-613aea00-bca8-11ea-897d-dd0e05ca8eaa.png)
+# Tally Blaster Control app
+![Tally Blaster Control app](https://user-images.githubusercontent.com/7444246/86400131-613aea00-bca8-11ea-897d-dd0e05ca8eaa.png)
 
 
 ### Inspired by
