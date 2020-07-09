@@ -24,7 +24,7 @@
 #define STATUS_CONNECTVMIX  5
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.2.3"
+#define VERSION         "0.2.4"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);

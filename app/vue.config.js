@@ -24,8 +24,7 @@ module.exports = {
           category: "public.app-category.video",
           entitlements: "./build/entitlements.mac.plist",
           icon: './build/icons/icon.icns',
-          hardenedRuntime: true,
-          // provisioningProfile: "./build/Tally_Blaster.provisionprofile",
+          hardenedRuntime: true
         },
         dmg: {
           icon: false
