@@ -16,21 +16,7 @@ module.exports = {
       productName: "Tally Blaster Control App",
       files: [
         "build/*"
-      ],
-      builderOptions: {
-        appId: "io.ruudboon.tally-blaster",
-        productName: "Tally Blaster Control App",
-        publish: [
-          {
-            provider: "github",
-            owner: "ruudboon",
-            repo: "tally",
-            releaseType: "draft",
-            channel: "edge",
-            url: "tally.ruudboon.io"
-          }
-        ],
-      }
+      ]
     }
   },
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/'
