@@ -21,17 +21,27 @@ module.exports = {
         afterSign: "electron-builder-notarize",
         publish: ['github'],
         mac: {
+          target: [
+            "dmg",
+            "mas",
+            "zip"
+          ],
           category: "public.app-category.video",
           entitlements: "./build/entitlements.mac.plist",
+          entitlementsInherit: "./build/entitlements.mac.plist",
           icon: './build/icons/icon.icns',
           hardenedRuntime: true
+        },
+        mas: {
+          "entitlements": "./build/entitlements.mas.plist",
+          "entitlementsInherit": "./build/entitlements.mas.inherit.plist",
+          "hardenedRuntime": false
         },
         dmg: {
           icon: false
         },
         linux: {
           icon: './public/icon.png',
-          category: "Development",
           target: [
               'snap',
               'deb',
