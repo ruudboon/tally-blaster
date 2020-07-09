@@ -12,11 +12,13 @@ module.exports = {
           './node_modules'
       ],
       nodeIntegration: true,
-      appId: "io.ruudboon.tally-blaster",
-      productName: "Tally Blaster Control App",
       files: [
         "build/*"
-      ]
+      ],
+      builderOptions: {
+        appId: "io.ruudboon.tally-blaster",
+        productName: "Tally Blaster Control App"
+      }
     }
   },
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/'
