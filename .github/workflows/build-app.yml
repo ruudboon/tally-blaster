@@ -39,7 +39,7 @@ jobs:
         # Import Apple API key for app notarization on macOS
         run: |
           mkdir -p ~/private_keys/
-          echo '${{ secrets.apple_key }}' > ~/private_keys/AuthKey_${{ secrets.apple_key_id }}.p8
+          echo '${{ secrets.API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.API_KEY_ID }}.p8
 
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
@@ -64,8 +64,8 @@ jobs:
           use_vue_cli: true
           skip_build: true
         env:
-          API_KEY_ID: ${{ secrets.apple_key_id }}
-          API_KEY_ISSUER_ID: ${{ secrets.apple_issuer_id }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
           BT_TOKEN: "${{secrets.bintray_apikey}}"
 
       - name: Cleanup artifacts
