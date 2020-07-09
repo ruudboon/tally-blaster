@@ -9,27 +9,30 @@ Vue.use(Vuex)
 // #define STATUS_LOCATE       3
 // #define STATUS_CONNECTWIFI  4
 // #define STATUS_CONNECTVMIX  5
+export interface Tally {
+  name: string;
+  host: string;
+  port: string;
+  address: string;
+  connected: boolean;
+  brightness: number;
+  tallyNumber: number;
+  viewerLedEnabled: boolean;
+  cameraLedEnabled: boolean;
+  vmixPort: number;
+  vmixHost: string;
+  connection: WebSocket;
+  ledState: number;
+}
+
+export interface TallyCollection {
+  tallys: Array<Tally>;
+}
 
 export default new Vuex.Store({
   state: {
-    tallys: [
-      // {
-      //   name: "NAME",
-      //   host: "HOST",
-      //   port: "123",
-      //   address: "127.0.0.1",
-      //   connected: true,
-      //   brightness: 255,
-      //   tallyNumber: 2,
-      //   viewerLedEnabled: true,
-      //   cameraLedEnabled: true,
-      //   vmixPort: 81,
-      //   vmixHost: "192.168.0.1",
-      //   connection: null,
-      //   ledState: 0,
-      // }
-    ] as any
-  },
+    tallys: []
+  } as TallyCollection,
   mutations: {
     addTallys(state, tallys) {
       state.tallys = [];

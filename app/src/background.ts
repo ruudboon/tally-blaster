@@ -84,7 +84,7 @@ app.on('ready', async () => {
 const serviceDiscovery = new Bonjour();
 const browser = serviceDiscovery.find({type: 'vmix-tally'})
 
-ipcMain.on('get-vmix-tallys', (event, arg) => {
+ipcMain.on('get-vmix-tallys', (event) => {
   event.returnValue = browser.services
 })
 
