@@ -14,15 +14,16 @@ export interface Tally {
   host: string;
   port: string;
   address: string;
-  connected: boolean;
   brightness: number;
   tallyNumber: number;
   viewerLedEnabled: boolean;
   cameraLedEnabled: boolean;
   vmixPort: number;
   vmixHost: string;
-  connection: WebSocket;
+  connection: WebSocket | null;
+  connectionState: string;
   ledState: number;
+  version: string;
 }
 
 export interface TallyCollection {
@@ -37,7 +38,7 @@ export default new Vuex.Store({
     addTallys(state, tallys) {
       state.tallys = [];
       tallys.forEach((tally) => {
-        const newTally = {
+        const newTally: Tally = {
           name: tally.name,
           host: tally.host,
           port: tally.port,
@@ -47,8 +48,8 @@ export default new Vuex.Store({
           viewerLedEnabled: false,
           cameraLedEnabled: false,
           vmixPort: 0,
-          vmixHost: 0,
-          connection: {},
+          vmixHost: '',
+          connection: null,
           connectionState: 'CLOSED',
           ledState: 0,
           version: 'v?'
