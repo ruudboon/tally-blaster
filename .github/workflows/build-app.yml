@@ -58,12 +58,13 @@ jobs:
           ls app/dist_electron/bundled
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Add artifacts Ubuntu
+      - name: Add artifacts MacOS
         run: |
           ls app/dist_electron
           ls app/dist_electron/bundled
         if: matrix.os == 'macos-latest'
-      - name: Add artifacts Ubuntu
+
+      - name: Add artifacts Windows
         run: |
           ls app/dist_electron
           ls app/dist_electron/bundled
