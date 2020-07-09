@@ -1,7 +1,14 @@
 {
-  "name": "vmix-tally-app",
+  "name": "tally-blaster",
+  "productName": "Tally Blaster",
+  "description": "Tally for vMix using wifi. Creates an AP to configure the local wifi, vMix host and tally number.",
   "version": "0.2.3",
-  "private": true,
+  "author": {
+    "name": "Ruud Boon",
+    "email": "inf@ruudboon.io",
+    "url": "https://ruudboon.io"
+  },
+  "homepage": "https://tally.ruudboon.io",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service electron:build",
