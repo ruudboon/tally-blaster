@@ -18,7 +18,27 @@ module.exports = {
       builderOptions: {
         appId: "io.ruudboon.tally-blaster",
         productName: "Tally Blaster Control App",
-        publish: ["github"]
+        afterSign: "electron-builder-notarize",
+        publish: ['github'],
+        mac: {
+          category: "public.app-category.video",
+          entitlements: "./build/entitlements.mac.plist",
+          icon: './build/icons/icon.icns',
+          hardenedRuntime: true
+        },
+        dmg: {
+          icon: false
+        },
+        linux: {
+          icon: './public/icon.png',
+          category: "Development",
+          target: [
+              'snap',
+              'deb',
+              'appImage'
+          ],
+          category: "Video"
+        }
       }
     }
   },

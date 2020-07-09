@@ -34,6 +34,13 @@ jobs:
           Write-Output "::set-env name=BONJOUR_SDK_HOME::C:\Program Files\Bonjour SDK"
         if: matrix.os == 'windows-latest'
 
+      - name: Prepare for app notarization
+        if: startsWith(matrix.os, 'macos')
+        # Import Apple API key for app notarization on macOS
+        run: |
+          mkdir -p ~/private_keys/
+          echo '${{ secrets.apple_key }}' > ~/private_keys/AuthKey_${{ secrets.apple_key_id }}.p8
+
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
@@ -55,21 +62,24 @@ jobs:
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           package_root: ./app
           use_vue_cli: true
+          skip_build: true
+        env:
+          API_KEY_ID: ${{ secrets.apple_key_id }}
+          API_KEY_ISSUER_ID: ${{ secrets.apple_issuer_id }}
+          BT_TOKEN: "${{secrets.bintray_apikey}}"
 
-      - name: Add artifacts Ubuntu
+      - name: Cleanup artifacts
+        if: matrix.os != 'windows-latest'
         run: |
-          ls app/dist_electron
-          ls app/dist_electron/bundled
-        if: matrix.os == 'ubuntu-latest'
+          npx rimraf "dist_electron/!(*.exe|*.deb|*.rpm|*.AppImage|*.dmg|*.snap)"
 
-      - name: Add artifacts MacOS
-        run: |
-          ls app/dist_electron
-          ls app/dist_electron/bundled
-        if: matrix.os == 'macos-latest'
-
-      - name: Add artifacts Windows
-        run: |
-          ls app/dist_electron
-          ls app/dist_electron/bundled
+      - name: Cleanup artifacts Win
         if: matrix.os == 'windows-latest'
+        run: |
+          npx rimraf "dist_electron/!(*.exe)"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.os }}
+          path: dist_electron
