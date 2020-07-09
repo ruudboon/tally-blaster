@@ -17,7 +17,8 @@ module.exports = {
       ],
       builderOptions: {
         appId: "io.ruudboon.tally-blaster",
-        productName: "Tally Blaster Control App"
+        productName: "Tally Blaster Control App",
+        publish: ["github"]
       }
     }
   },
