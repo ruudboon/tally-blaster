@@ -25,7 +25,8 @@
     "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=build --flatten"
   },
   "main": "background.js",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "bonjour": "^3.5.0",
     "core-js": "^3.6.5",
     "mdns": "^2.5.1",
@@ -36,9 +37,7 @@
     "vue-router": "^3.2.0",
     "vuetify": "^2.3.4",
     "vuex": "^3.5.1",
-    "vuex-electron": "^1.0.3"
-  },
-  "devDependencies": {
+    "vuex-electron": "^1.0.3",
     "@types/node": "^12.12.48",
     "@types/webpack-env": "~1.14.1",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
