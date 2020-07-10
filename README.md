@@ -17,7 +17,7 @@ Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB.
 - using any wifi enabled device with a browser (computer, phone, tablet) connect to the newly created Access Point (ESP*)
 - because of the Captive Portal and the DNS server you will either get a 'Join to network' type of popup or get any domain you try to access redirected to the configuration portal
 - choose the access points that connects your vMix (must have DHCP), enter password, click save
-- start Configuration App (Currently MacOS only) and scan for Tally Nodes
+- start Configuration App and scan for Tally Nodes
 - configure your nodes with the vMix IP and tally number.
 
 
@@ -45,10 +45,9 @@ Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB.
 ## Current plans
 - Add 3d printer case design
 - Stabilize, optimise and improve software
-- Add windows & linux App
 - Improve documentation
 - Configure using webinterface
-- Ask vMix for ZeroConf broadcast to allow auto connect
+- [Ask vMix for ZeroConf broadcast to allow auto connect](https://forums.vmix.com/posts/t23873-Zeroconf---Bonjour)
 - Create demonstration video
 
 # Led colors
