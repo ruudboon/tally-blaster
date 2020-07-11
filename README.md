@@ -1,6 +1,6 @@
 ![tally-blaster-logo-small](https://user-images.githubusercontent.com/7444246/87219490-e8005e80-c35b-11ea-96ca-02b44e2f3a28.png)
 # Tally Blaster ![Build](https://github.com/ruudboon/tally-blaster/workflows/Build/release/badge.svg)
-Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB. 
+WiFi based Tally using NodeMCU and 2 NeoPixel Mini PCB. Currently supporting vMix planning to support more systems like Blackmagic etc.
 
 ## Features
 - Camera tally LED & Host tally LED
@@ -9,6 +9,7 @@ Tally for vMix using NodeMCU and 2 NeoPixel Mini PCB.
 - Save settings permanent (App not needed during production)
 - Autodiscover tally nodes using Zerconf/Bonjour
 - Configure app to control and monitor all nodes
+- vMix support
 
 
 ### How It Works
