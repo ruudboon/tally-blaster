@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head></head>
+<body>
+<center>
+    <img src="assets/logo.svg" width="200" height="200"></img>
+</center>
+<center>
+    Loading...<span id="status"></span>
+</center>
+</body>
+<script>
+    // Listen for data from browser process and update splashscreen
+    var ipcRenderer = require("electron").ipcRenderer;
+    ipcRenderer.on("update", function(event, status) {
+        document.getElementById("status").innerText = status;
+    })
+</script>
+</html>

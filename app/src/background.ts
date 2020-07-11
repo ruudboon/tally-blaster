@@ -6,6 +6,7 @@ import {
 } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path';
 import Bonjour from 'bonjour';
+import * as Splashscreen from "@trodi/electron-splashscreen";
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const __static: string;
@@ -21,7 +22,7 @@ protocol.registerSchemesAsPrivileged([
 
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({
+  const mainOpts: Electron.BrowserWindowConstructorOptions = {
     width: 800,
     height: 600,
     icon: path.join(__static, 'icon.png'),
@@ -31,7 +32,23 @@ function createWindow() {
       nodeIntegration: (process.env
           .ELECTRON_NODE_INTEGRATION as unknown) as boolean
     },
-  })
+  };
+  console.log(`${__dirname}`);
+
+  const config: Splashscreen.Config = {
+    windowOpts: mainOpts,
+    templateUrl: path.join(__static, 'logo.svg'),
+    delay: 0,
+    minVisible: 1500,
+    splashScreenOpts: {
+      width: 600,
+      height: 400,
+      transparent: true
+    }
+  };
+
+
+  win = Splashscreen.initSplashScreen(config);
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
