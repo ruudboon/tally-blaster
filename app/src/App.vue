@@ -7,11 +7,11 @@
       <div class="d-flex align-center">
         <v-img
           alt="vMix Tally NodeMCU Logo"
-          class="shrink mr-2"
+          class="shrink"
           contain
           src="@/assets/logo.svg"
           transition="scale-transition"
-          width="40"
+          width="100"
         />
       </div>
       <v-spacer></v-spacer>
@@ -158,6 +158,9 @@ export default Vue.extend({
           }
       })
     }
+  },
+  mounted() {
+    this.findTallys();
   },
   methods: {
     findTallys: function () {

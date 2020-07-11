@@ -99,7 +99,9 @@ app.on('ready', async () => {
 
 // browse for all http services
 const serviceDiscovery = new Bonjour();
-const browser = serviceDiscovery.find({type: 'vmix-tally'})
+const browser = serviceDiscovery.find({type: 'vmix-tally'}, () => {
+  app.setBadgeCount(browser.services.length);
+})
 
 ipcMain.on('get-vmix-tallys', (event) => {
   event.returnValue = browser.services
