@@ -1,5 +1,5 @@
 'use strict'
-import { app, protocol, BrowserWindow, ipcMain } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, Menu } from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -7,7 +7,7 @@ import {
 import path from 'path';
 import Bonjour from 'bonjour';
 import * as Splashscreen from "@trodi/electron-splashscreen";
-
+import { applicationMenu } from './menu';
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const __static: string;
 
@@ -19,6 +19,100 @@ let win: BrowserWindow | null
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+const template = [
+  {
+    label: 'Edit',
+    submenu: [
+      {
+        role: 'undo'
+      },
+      {
+        role: 'redo'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'cut'
+      },
+      {
+        role: 'copy'
+      },
+      {
+        role: 'paste'
+      },
+      {
+        role: 'pasteandmatchstyle'
+      },
+      {
+        role: 'delete'
+      },
+      {
+        role: 'selectall'
+      }
+    ]
+  },
+  {
+    label: 'View',
+    submenu: [
+      {
+        label: 'Reload',
+        accelerator: 'CmdOrCtrl+R',
+        click (item, focusedWindow) {
+          if (focusedWindow) focusedWindow.reload()
+        }
+      },
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+        click (item, focusedWindow) {
+          if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'resetzoom'
+      },
+      {
+        role: 'zoomin'
+      },
+      {
+        role: 'zoomout'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'togglefullscreen'
+      }
+    ]
+  },
+  {
+    role: 'window',
+    submenu: [
+      {
+        role: 'minimize'
+      },
+      {
+        role: 'close'
+      }
+    ]
+  },
+  {
+    role: 'help',
+    submenu: [
+      {
+        label: 'Learn More',
+        click () { require('electron').shell.openExternal('http://electron.atom.io') }
+      }
+    ]
+  }
+]
+
+Menu.setApplicationMenu(applicationMenu())
 
 function createWindow() {
   // Create the browser window.
@@ -33,13 +127,17 @@ function createWindow() {
           .ELECTRON_NODE_INTEGRATION as unknown) as boolean
     },
   };
-  console.log(`${__dirname}`);
+
+  let minTime = 1500;
+  if (isDevelopment) {
+    minTime= 0;
+  }
 
   const config: Splashscreen.Config = {
     windowOpts: mainOpts,
     templateUrl: path.join(__static, 'logo.svg'),
     delay: 0,
-    minVisible: 1500,
+    minVisible: minTime,
     splashScreenOpts: {
       width: 600,
       height: 400,
@@ -121,3 +219,4 @@ if (isDevelopment) {
     })
   }
 }
+
