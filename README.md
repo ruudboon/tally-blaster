@@ -2,6 +2,9 @@
 # Tally Blaster ![Build](https://github.com/ruudboon/tally-blaster/workflows/Build/release/badge.svg)
 WiFi based Tally using NodeMCU and 2 NeoPixel Mini PCB. Currently supporting vMix, planning to support more systems like Blackmagic etc.
 
+![tally-blaster](https://user-images.githubusercontent.com/7444246/87221383-f8b8d080-c36b-11ea-8cfc-20c5f82e6d98.gif)
+
+
 ## Features
 - Camera tally LED & Host tally LED
 - Brightness control
