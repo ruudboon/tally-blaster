@@ -3,7 +3,7 @@
   "productName": "Tally Blaster",
   "description": "Tally for vMix using wifi. Creates an AP to configure the local wifi, vMix host and tally number.",
   "license": "BSD-3-Clause",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": {
     "name": "Ruud Boon",
     "email": "info@ruudboon.io",
