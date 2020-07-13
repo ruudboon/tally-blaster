@@ -27,7 +27,6 @@ module.exports = {
         mac: {
           target: [
             "dmg",
-            "mas",
             "zip"
           ],
           category: "public.app-category.video",
