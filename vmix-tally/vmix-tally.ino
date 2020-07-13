@@ -25,7 +25,7 @@
 #define STATUS_UPGRADE      6
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.3.0"
+#define VERSION         "0.3.1"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
