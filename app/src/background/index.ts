@@ -1,13 +1,13 @@
 'use strict'
 import { app, protocol, BrowserWindow, ipcMain, Menu } from 'electron'
-import {
-  createProtocol,
-  installVueDevtools
-} from 'vue-cli-plugin-electron-builder/lib'
+import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
 import path from 'path';
 import Bonjour from 'bonjour';
 import * as Splashscreen from "@trodi/electron-splashscreen";
 import { applicationMenu } from './menu';
+import { Flasher } from './flasher';
+
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 declare const __static: string;
 
@@ -20,105 +20,16 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
-const template = [
-  {
-    label: 'Edit',
-    submenu: [
-      {
-        role: 'undo'
-      },
-      {
-        role: 'redo'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'cut'
-      },
-      {
-        role: 'copy'
-      },
-      {
-        role: 'paste'
-      },
-      {
-        role: 'pasteandmatchstyle'
-      },
-      {
-        role: 'delete'
-      },
-      {
-        role: 'selectall'
-      }
-    ]
-  },
-  {
-    label: 'View',
-    submenu: [
-      {
-        label: 'Reload',
-        accelerator: 'CmdOrCtrl+R',
-        click (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.reload()
-        }
-      },
-      {
-        label: 'Toggle Developer Tools',
-        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-        click (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.webContents.toggleDevTools()
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'resetzoom'
-      },
-      {
-        role: 'zoomin'
-      },
-      {
-        role: 'zoomout'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'togglefullscreen'
-      }
-    ]
-  },
-  {
-    role: 'window',
-    submenu: [
-      {
-        role: 'minimize'
-      },
-      {
-        role: 'close'
-      }
-    ]
-  },
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: 'Learn More',
-        click () { require('electron').shell.openExternal('http://electron.atom.io') }
-      }
-    ]
-  }
-]
-
 Menu.setApplicationMenu(applicationMenu())
+
+// browse for all http services
+const serviceDiscovery = new Bonjour();
 
 function createWindow() {
   // Create the browser window.
   const mainOpts: Electron.BrowserWindowConstructorOptions = {
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     icon: path.join(__static, 'icon.png'),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -195,14 +106,37 @@ app.on('ready', async () => {
   createWindow()
 })
 
-// browse for all http services
-const serviceDiscovery = new Bonjour();
-const browser = serviceDiscovery.find({type: 'vmix-tally'}, () => {
-  app.setBadgeCount(browser.services.length);
+ipcMain.on('get-tallys', (event) => {
+  const browser = serviceDiscovery.find({type: 'vmix-tally'}, () => {
+    app.setBadgeCount(browser.services.length);
+    event.reply('tally-nodes', browser.services);
+  })
 })
 
-ipcMain.on('get-vmix-tallys', (event) => {
-  event.returnValue = browser.services
+const Flash = new Flasher();
+ipcMain.on('get-serial-devices', (event) => {
+  Flash.getSupportedDevices().then(devices => {
+    event.reply('detected-serial-devices', devices);
+  })
+})
+
+ipcMain.on('get-firmware-downloads', (event) => {
+  Flash.getFirmwares().then(files => {
+    event.reply('downloaded-firmwares', files);
+  })
+})
+
+ipcMain.on('download-firmware', (event, firmware) => {
+  Flash.downloadFirmware(firmware).then(files => {
+    console.log('--', files);
+    event.reply('downloaded-firmwares', files);
+  })
+})
+
+ipcMain.on('flash-node', (event, port, firmware) => {
+  Flash.flashNode(port, firmware).then(() => {
+    event.reply('flash-complete');
+  })
 })
 
 // Exit cleanly on request from parent process in development mode.

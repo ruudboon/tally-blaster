@@ -8,7 +8,7 @@ export const applicationMenu = () => {
         role: 'help',
         submenu: [
             {
-                label: 'Learn More',
+                label: 'Learn more',
                 click: async () => {
                     await shell.openExternal('https://tally-blaster.ruudboon.io');
                 }
@@ -26,13 +26,13 @@ export const applicationMenu = () => {
                 }
             },
             {
-                label: 'Github Repository',
+                label: 'Github repository',
                 click: async () => {
                     await shell.openExternal('https://github.com/ruudboon/tally-blaster');
                 }
             },
             {
-                label: 'Search Issues',
+                label: 'Search issues',
                 click: async () => {
                     await shell.openExternal('https://github.com/ruudboon/tally-blaster/issues');
                 }

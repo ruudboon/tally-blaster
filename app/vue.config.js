@@ -4,6 +4,9 @@ module.exports = {
   ],
   pluginOptions: {
     electronBuilder: {
+      mainProcessFile: 'src/background/index',
+      mainProcessWatch: ['src/background/menu.ts', 'src/background/flasher.ts'],
+
       // List native deps here if they don't work
       // If you are using Yarn Workspaces, you may have multiple node_modules folders
       // List them all here so that VCP Electron Builder can find them
@@ -15,6 +18,7 @@ module.exports = {
       files: [
         "build/*"
       ],
+      externals: ['serialport'],
       builderOptions: {
         appId: "io.ruudboon.tally-blaster",
         productName: "Tally Blaster Control App",

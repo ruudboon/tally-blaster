@@ -22,9 +22,10 @@
 #define STATUS_LOCATE       3
 #define STATUS_CONNECTWIFI  4
 #define STATUS_CONNECTVMIX  5
+#define STATUS_UPGRADE      6
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.2.4"
+#define VERSION         "0.3.0"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
@@ -35,13 +36,14 @@ WebSocketsServer webSocket(81);
 AsyncClient* vmixClient = new AsyncClient();
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(TOTAL_PIXELS, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
-uint32_t status[6] = {
+uint32_t status[7] = {
     pixels.Color(0,0,0), //STATUS_CONNECTED: Black is connected
     pixels.Color(0,255,0), //STATUS_PREVIEW: Green = Preview
     pixels.Color(255,0,0), //STATUS_PROGRAM: Red = Program
     pixels.Color(255,255,255), //STATUS_LOCATE: White Blinking = Identify / Call
     pixels.Color(128,0,128), //STATUS_CONNECTWIFI: Purple Blinkning = Connecting to wifi
-    pixels.Color(255,140,0) //STATUS_CONNECTVMIX: Orange Blinkning = Conecting to vmix
+    pixels.Color(255,140,0), //STATUS_CONNECTVMIX: Orange Blinkning = Conecting to vmix
+    pixels.Color(0,255,255) //STATUS_UPGRADE: Aqua Blinkning = Upgrading firmware
 };
 
 // Settings object

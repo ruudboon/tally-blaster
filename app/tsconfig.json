@@ -11,6 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "noImplicitAny":  false,
+    "strictNullChecks": false, //remove this after creating interfaces
     "baseUrl": ".",
     "types": [
       "webpack-env",
