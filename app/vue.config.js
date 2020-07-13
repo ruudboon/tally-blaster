@@ -36,11 +36,11 @@ module.exports = {
           icon: './build/icons/icon.icns',
           hardenedRuntime: true
         },
-        mas: {
-          "entitlements": "./build/entitlements.mas.plist",
-          "entitlementsInherit": "./build/entitlements.mas.inherit.plist",
-          "hardenedRuntime": false
-        },
+        // mas: {
+        //   "entitlements": "./build/entitlements.mas.plist",
+        //   "entitlementsInherit": "./build/entitlements.mas.inherit.plist",
+        //   "hardenedRuntime": false
+        // },
         dmg: {
           icon: false
         },
