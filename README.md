@@ -64,7 +64,7 @@ Case by Elvin Media
 - CONNECTING VMIX: Orange Blinkning
 
 # Sponsor
-This project will grow faster with your help. Donations and sponsorships allow me to spend more time on this project and help me paying for licenses and hardware to test. Want your logo on this page? Please contact me. 
+This project will grow faster with your help. Donations and sponsorships allow me to spend more time on this project and help me paying for licenses and hardware to test, coffee, debugging pizza and release beers. Want your logo on this page? Please contact me.
 
 [Github Sponsor](https://github.com/sponsors/ruudboon). One-time donations are welcome through [PayPal](https://www.paypal.me/ruudboon).
 
