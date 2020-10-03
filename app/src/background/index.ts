@@ -107,7 +107,7 @@ app.on('ready', async () => {
 })
 
 ipcMain.on('get-tallys', (event) => {
-  const browser = serviceDiscovery.find({type: 'vmix-tally'}, () => {
+  const browser = serviceDiscovery.find({type: 'tallyblaster'}, () => {
     app.setBadgeCount(browser.services.length);
     event.reply('tally-nodes', browser.services);
   })

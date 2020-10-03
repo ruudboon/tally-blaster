@@ -16,16 +16,21 @@
 #define VIEWER_LED      1
 
 
-#define STATUS_CONNECTED    0
-#define STATUS_PREVIEW      1
-#define STATUS_PROGRAM      2
-#define STATUS_LOCATE       3
-#define STATUS_CONNECTWIFI  4
-#define STATUS_CONNECTVMIX  5
-#define STATUS_UPGRADE      6
+#define STATUS_CONNECTED      0
+#define STATUS_PREVIEW        1
+#define STATUS_PROGRAM        2
+#define STATUS_LOCATE         3
+#define STATUS_CONNECTWIFI    4
+#define STATUS_CONNECTSOURCE  5
+#define STATUS_UPGRADE        6
+
+#define SOURCE_VMIX 0
+#define SOURCE_ATEM 1
+
+
 
 #define CONFIG_FILENAME "/tally-config.cfg"
-#define VERSION         "0.3.2"
+#define VERSION         "0.4.0"
 
 // optional arguments fuction need to be defined
 void setLedColor(uint32_t color, bool ignoreDisabledLeds=false);
@@ -42,16 +47,17 @@ uint32_t status[7] = {
     pixels.Color(255,0,0), //STATUS_PROGRAM: Red = Program
     pixels.Color(255,255,255), //STATUS_LOCATE: White Blinking = Identify / Call
     pixels.Color(128,0,128), //STATUS_CONNECTWIFI: Purple Blinkning = Connecting to wifi
-    pixels.Color(255,140,0), //STATUS_CONNECTVMIX: Orange Blinkning = Conecting to vmix
+    pixels.Color(255,140,0), //STATUS_CONNECTSOURCE: Orange Blinkning = Conecting to vmix
     pixels.Color(0,255,255) //STATUS_UPGRADE: Aqua Blinkning = Upgrading firmware
 };
 
 // Settings object
 struct Settings
 {
-  char vmixHost[64]="172.20.0.193";
-  int vmixPort=8099;
+  char sourceIp[64]="192.160.1.36";
+  int port=9910;
   int tallyNumber=1;
+  int sourceType=0;
   bool viewerLedEnabled=true;
   bool cameraLedEnabled=true;
   int brightness = 255;
@@ -61,9 +67,10 @@ struct Settings
 int ledState = 0;
 int oldLedState = -1;
 int tickerCountdown = 0;
+int sourceType = SOURCE_VMIX;
 bool fadingUp = false;
 String chipId = String(ESP.getChipId());
-String hostname = String("vmix-tally-" + chipId);
+String hostname = String("tally-blaster-node-" + chipId);
 int currentBrightness = 255;
 Settings settings;
 
@@ -101,7 +108,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   WiFi.mode(WIFI_AP_STA);
-  Serial.println("vMix Tally NodeMCU v" + String(VERSION));
+  Serial.println("Tally Blaster NodeMCU v" + String(VERSION));
   SPIFFS.begin();
   readConfig();
   setupLeds();
@@ -140,9 +147,9 @@ void setup() {
   digitalWrite(BUILTIN_LED, LOW);
 
   if (MDNS.begin(hostname)) {
-    Serial.println("mDNS started: vmixtally");  
-    if (MDNS.addService("vmix-tally", "tcp", 81)) {
-       Serial.println("mDNS registered as _vmix-tally._tcp"); 
+    Serial.println("mDNS started: tallyblaster");  
+    if (MDNS.addService("tallyblaster", "tcp", 81)) {
+       Serial.println("mDNS registered as tallyblaster._tcp"); 
     } else {
       Serial.println("mDNS failed registering");
     }
@@ -160,7 +167,7 @@ void setup() {
   vmixClient->onDisconnect(&onVmixDisconnect, vmixClient);
   vmixClient->onError(&handleVmixError, vmixClient);
   vmixClient->onTimeout(&handleTimeOut, vmixClient);
-  connectTovMix();
+  connectToSource();
 }
 
 void saveConfig()
@@ -245,11 +252,14 @@ String getSettingAsString(String settingKey)
         }
         return settingKey + ":" + boolAsString;
     }
-    if (settingKey == "vmixPort") {
-        return settingKey + ":" + String(settings.vmixPort);
+    if (settingKey == "port") {
+        return settingKey + ":" + String(settings.port);
     }
-    if (settingKey == "vmixHost") {
-        return settingKey + ":" + String(settings.vmixHost);
+    if (settingKey == "sourceIp") {
+        return settingKey + ":" + String(settings.sourceIp);
+    }
+    if (settingKey == "sourceType") {
+        return settingKey + ":" + String(sourceType);
     }
     if (settingKey == "tallyNumber") {
         return settingKey + ":" + String(settings.tallyNumber);
@@ -308,24 +318,32 @@ void updateSetting(String payload)
         webSocket.broadcastTXT(message);
         return;
     }
-    if (settingKey == "vmixPort") {
-        settings.vmixPort = settingValue.toInt();
-        String message = getSettingAsString("vmixPort");
+    if (settingKey == "port") {
+        settings.port = settingValue.toInt();
+        String message = getSettingAsString("port");
         webSocket.broadcastTXT(message);
-        connectTovMix();
+        connectToSource();
         return;
     }
-    if (settingKey == "vmixHost") {
-        settingValue.toCharArray(settings.vmixHost, 63);
+    if (settingKey == "sourceIp") {
+        settingValue.toCharArray(settings.sourceIp, 63);
 
-        String message = getSettingAsString("vmixHost");
+        String message = getSettingAsString("sourceIp");
         webSocket.broadcastTXT(message);
-        connectTovMix();
+        connectToSource();
+        return;
+    }
+    if (settingKey == "sourceType") {
+        settingValue.toCharArray(settings.sourceIp, 63);
+
+        String message = getSettingAsString("sourceType");
+        webSocket.broadcastTXT(message);
+        connectToSource();
         return;
     }
     if (settingKey == "tallyNumber") {
         settings.tallyNumber = settingValue.toInt();
-        connectTovMix();
+        connectToSource();
         return;
     }
     if (settingKey == "brightness") {
@@ -358,10 +376,13 @@ void sendAllSettings(uint8_t webSocketClientID)
     reply = getSettingAsString("cameraLedEnabled");
     webSocket.sendTXT(webSocketClientID, reply);
 
-    reply = getSettingAsString("vmixPort");
+    reply = getSettingAsString("port");
     webSocket.sendTXT(webSocketClientID, reply);
 
-    reply = getSettingAsString("vmixHost");
+    reply = getSettingAsString("sourceIp");
+    webSocket.sendTXT(webSocketClientID, reply);
+
+    reply = getSettingAsString("sourceType");
     webSocket.sendTXT(webSocketClientID, reply);
 
     reply = getSettingAsString("tallyNumber");
@@ -446,7 +467,7 @@ static void replyToVmix(void* arg) {
 }
 
 void onVmixConnect(void* arg, AsyncClient* client) {
-	Serial.printf("\n client has been connected to %s on port %d \n", settings.vmixHost, settings.vmixPort);
+	Serial.printf("\n client has been connected to %s on port %d \n", settings.sourceIp, settings.port);
     Serial.println(" Connected!");
     Serial.println("------------");
 
@@ -464,7 +485,7 @@ void onVmixConnect(void* arg, AsyncClient* client) {
 void onVmixDisconnect(void* arg, AsyncClient* c) {
   Serial.print("We're disconnected!\n");
   WiFi.mode(WIFI_AP_STA);
-  connectTovMix();
+  connectToSource();
 }
 
 static void handleTimeOut(void* arg, AsyncClient* client, uint32_t time) {
@@ -519,17 +540,44 @@ static void handleVmixError(void* arg, AsyncClient* client, int8_t error) {
 	Serial.printf("\n connection error %s from client %s \n", client->errorToString(error), client->remoteIP().toString().c_str());
 }
 
+//Connect to source instance
+void connectToSource()
+{
+  Serial.print("connect");
+  Serial.print(SOURCE_VMIX);
+  switch (sourceType) {
+    case SOURCE_VMIX:
+      Serial.print("Source is vMix");
+      connectTovMix();
+      break;
+    case SOURCE_ATEM:
+      Serial.print("Source is Atem");
+      connectToAtem();
+      break;
+ }
+}
+
 //Connect to vMix instance
 void connectTovMix()
 {
  Serial.print("Connecting to vMix on ");
- Serial.print(String(settings.vmixHost) + ":" + settings.vmixPort);
+ Serial.print(String(settings.sourceIp) + ":" + settings.port);
  Serial.print("...");
- ledState = STATUS_CONNECTVMIX;
+ ledState = STATUS_CONNECTSOURCE;
  updateLedColor();
  startPulsating();
  
- vmixClient->connect(settings.vmixHost, settings.vmixPort);
+ vmixClient->connect(settings.sourceIp, settings.port);
+}
+
+void connectToAtem()
+{
+ Serial.print("Connecting to Atem on ");
+ Serial.print(String(settings.sourceIp) + ":" + settings.port);
+ Serial.print("...");
+ ledState = STATUS_CONNECTSOURCE;
+ updateLedColor();
+ startPulsating();
 }
 
 void loop() {

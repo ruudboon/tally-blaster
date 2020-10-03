@@ -3,9 +3,9 @@
       <v-toolbar flat color="primary">
         <v-subheader dark>Tally host</v-subheader>
         <v-flex x1 class="pt-5">
-          <v-text-field v-model="vMixHost" dark flat></v-text-field>
+          <v-text-field v-model="host" dark flat></v-text-field>
         </v-flex>
-        <v-btn @click="setAll(vMixHost)" icon tile color="white"><v-icon>mdi-transfer-down</v-icon></v-btn>
+        <v-btn @click="setAll(host)" icon tile color="white"><v-icon>mdi-transfer-down</v-icon></v-btn>
         <v-btn @click="saveAll()" icon tile color="white"><v-icon>mdi-content-save</v-icon></v-btn>
       </v-toolbar>
       <v-container fill-height v-if="tallys.length == 0">
@@ -66,21 +66,21 @@
             <v-row>
               <v-col cols="8" sm="6">
                 <v-text-field
-                        v-model="tally.vmixHost"
-                        label="vMix Host"
+                        v-model="tally.sourceIp"
+                        label="Source IP"
                         :disabled="tally.connectionState != 'CONNECTED'"
-                        @change="vMixHostChanged(tally)"
+                        @change="sourceIpChanged(tally)"
                 />
               </v-col>
               <v-col cols="4" sm="2">
                 <v-text-field
-                        v-model.number="tally.vmixPort"
-                        label="vMix Port"
+                        v-model.number="tally.port"
+                        label="Host Port"
                         :disabled="tally.connectionState != 'CONNECTED'"
-                        @change="vMixPortChanged(tally)"
+                        @change="portChanged(tally)"
                 />
               </v-col>
-              <v-col cols="12" sm="4">
+              <v-col cols="12" sm="2">
                 <v-text-field
                         v-model.number="tally.tallyNumber"
                         label="Tally ID"
@@ -91,6 +91,19 @@
                         @click:prepend="tallyDown(tally)"
                         @change="tallyNumberChanged(tally)"
                 />
+              </v-col>
+              <v-col cols="12" sm="2">
+                <v-select
+                    v-model="tally.sourceType"
+                    :items="sourceTypes"
+                    label="Type"
+                    item-value="value"
+                    item-text="label"
+                    required
+                    no-data-text="No device detected"
+                    @change="sourceTypeChanged(tally)"
+                >
+                </v-select>
               </v-col>
             </v-row>
             <v-row>
@@ -139,7 +152,17 @@
     data: function () {
       return {
         connections: {},
-        vMixHost: '192.168.0.1'
+        host: '192.168.0.1',
+        sourceTypes: [
+          {
+            value: 0,
+            label: 'vMix'
+          },
+          {
+            value: 1,
+            label: 'Blackmagic Atem'
+          }
+        ],
       }
     },
     computed: {
@@ -188,12 +211,16 @@
         const data = "tallyNumber:" + tally.tallyNumber;
         tally.connection.send(data);
       },
-      vMixHostChanged(tally) {
-        const data = "vmixHost:" + tally.vmixHost;
+      sourceIpChanged(tally) {
+        const data = "sourceIp:" + tally.sourceIp;
         tally.connection.send(data);
       },
-      vMixPortChanged(tally) {
-        const data = "vmixPort:" + tally.vmixPort;
+      sourceTypeChanged(tally) {
+        const data = "sourceType:" + tally.sourceType;
+        tally.connection.send(data);
+      },
+      portChanged(tally) {
+        const data = "port:" + tally.port;
         tally.connection.send(data);
       },
       getColor(status) {
@@ -208,7 +235,7 @@
             return "white";
           case 4 : //STATUS_CONNECTWIFI: Purple Blinkning = Connecting to wifi
             return "deep-purple darken-1";
-          case 5 : //STATUS_CONNECTVMIX: Orange Blinkning = Conecting to vmix
+          case 5 : //STATUS_CONNECTSOURCE: Orange Blinkning = Conecting to source
             return "orange darken-1";
         }
       },
@@ -238,7 +265,7 @@
         tally.connection.send(data);
       },
       setAll(ip) {
-        const data = "vmixHost:" + ip;
+        const data = "sourceIp:" + ip;
         this.tallys.forEach( tally => {
           tally.connection.send(data);
         })

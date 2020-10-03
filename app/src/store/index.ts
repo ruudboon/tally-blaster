@@ -58,6 +58,7 @@ export default new Vuex.Store({
         newTally.connectionState = 'CONNECTING';
         connection.onmessage = function(event) {
           const data = event.data.split(":");
+          console.log(data);
           switch (data[0]) {
             case "viewerLedEnabled" :
             case "cameraLedEnabled" :
@@ -67,13 +68,16 @@ export default new Vuex.Store({
                 newTally[data[0]] = true;
               }
               break;
-            case "vmixPort" :
+            case "port" :
             case "tallyNumber" :
             case "brightness" :
             case "ledState":
               newTally[data[0]] = parseInt(data[1]);
               break;
-            case "vmixHost":
+            case "sourceType":
+              newTally[data[0]] = parseInt(data[1]);
+              break;
+            case "sourceHost":
               newTally[data[0]] = data[1];
               break;
             case "version":

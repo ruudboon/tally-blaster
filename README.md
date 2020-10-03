@@ -37,7 +37,10 @@ Case by Elvin Media
 - Download latest release
 - Unpack zip
 - Open vmix-tally.ino with arduino IDE
-- Install the extra libraries (WiFiManager by tzapu 2.0.3-alpha, Adafruit NeoPixel by Adafruit 1.5.0, WebSockets by Markus Sattler 2.2.0)
+- Make sure you have the NodeMCU board [installed](https://github.com/esp8266/Arduino#installing-with-boards-manager)
+- Install the extra libraries (WiFiManager by [tzapu 2.0.3-alpha](https://github.com/tzapu/WiFiManager/releases/tag/2.0.3-alpha), Adafruit NeoPixel by Adafruit 1.6.0, WebSockets by Markus Sattler 2.2.0, [ESPAsyncTCP](https://github.com/me-no-dev/ESPAsyncTCP/archive/master.zip), [Atem](https://github.com/kasperskaarhoj/SKAARHOJ-Open-Engineering/blob/master/ArduinoLibs.zip))
+- ** For the atem library, download and extract library and select atem folder using `Include Library -> Add .ZIP Library` ** 
+- Select board (NodeMCU 1.0)
 - Flash NodeMCU
 
 ## NodeMCU pin layout
